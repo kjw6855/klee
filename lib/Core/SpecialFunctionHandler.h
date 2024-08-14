@@ -139,6 +139,8 @@ namespace klee {
     HANDLER(handleUnderConstrained);
     HANDLER(handleWarning);
     HANDLER(handleWarningOnce);
+    // assert-p4 changes
+    HANDLER(handlePrintOnce);
     HANDLER(handleAddOverflow);
     HANDLER(handleMulOverflow);
     HANDLER(handleSubOverflow);

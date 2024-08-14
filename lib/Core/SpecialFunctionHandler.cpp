@@ -107,6 +107,8 @@ static SpecialFunctionHandler::HandlerInfo handlerInfo[] = {
   add("klee_stack_trace", handleStackTrace, false),
   add("klee_warning", handleWarning, false),
   add("klee_warning_once", handleWarningOnce, false),
+  // assert-p4 changes
+  add("klee_print_once", handlePrintOnce, false),
   add("klee_alias_function", handleAliasFunction, false),
   add("malloc", handleMalloc, true),
   add("memalign", handleMemalign, true),
@@ -191,6 +193,25 @@ void SpecialFunctionHandler::prepare(
         f->deleteBody();
     }
   }
+}
+
+// assert-p4 changes
+void SpecialFunctionHandler::handlePrintOnce(ExecutionState &state,
+                                             KInstruction *target,
+                                             std::vector<ref<Expr> > &arguments) {
+ assert(arguments.size()==2 &&
+         "invalid number of arguments to klee_print_once");
+
+  static int keys[256];
+
+  int key = cast<ConstantExpr>(arguments[0])->getZExtValue();
+
+  if(!keys[key]){
+     keys[key] = 1;
+     std::string msg_str = readStringAtAddress(state, arguments[1]);
+     printf("%s\n", msg_str.c_str());
+  }
+
 }
 
 void SpecialFunctionHandler::bind() {
